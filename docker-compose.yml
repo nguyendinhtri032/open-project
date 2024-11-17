@@ -1,0 +1,37 @@
+# version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+        - "80:80"
+    volumes: 
+        - ./src:/var/www/open-project
+        - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - openproject_network
+  openproject:
+    image: openproject/openproject:15
+    container_name: openproject
+    ports:
+      - "8080:81"
+    environment:
+      - OPENPROJECT_HOST__NAME=openp-roject.ndtri.click
+      - OPENPROJECT_SECRET_KEY_BASE=secret
+    volumes:
+      - /var/lib/openproject/pgdata:/var/openproject/pgdata
+      - /var/lib/openproject/assets:/var/openproject/assets
+    restart: unless-stopped
+    networks:
+      - openproject_network
+
+networks:
+  openproject_network:
+    driver: bridge
+
+volumes:
+  pgdata:
+  assets:
